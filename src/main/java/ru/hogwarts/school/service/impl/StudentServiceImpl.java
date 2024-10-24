@@ -1,58 +1,57 @@
 package ru.hogwarts.school.service.impl;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.repositories.StudentRepository;
 import ru.hogwarts.school.service.StudentService;
 
 import java.util.*;
 
 @Service
 public class StudentServiceImpl implements StudentService {
-    private final Map<Long, Student> studentMap = new HashMap<>();
-    private long lastId = 0;
+
+    private final StudentRepository studentRepository;
+
+    public StudentServiceImpl(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
+    }
 
     @Override
     public Student add(Student student) {
-        student.setId(++lastId);
-        studentMap.put(lastId, student);
-        return student;
+        return studentRepository.save(student);
     }
 
     @Override
     public ResponseEntity<Student> findStudent(long id) {
-        Student student = studentMap.get(id);
+        Student student = studentRepository.findById(id).get();
         return nullCheck(student);
     }
 
     @Override
     public ResponseEntity<Student> editStudent(Student student) {
-        if (!studentMap.containsKey(student.getId())) {
-            return ResponseEntity.notFound().build();
-        }
-        Student foundStudent = studentMap.put(student.getId(), student);
-        return nullCheck(foundStudent);
+
+        Student editStudent = studentRepository.save(student);
+        return nullCheck(editStudent);
     }
 
     @Override
-    public ResponseEntity<Student> deleteStudent(long id) {
-        Student student = studentMap.remove(id);
-        return nullCheck(student);
+    public void deleteStudent(long id) {
+        studentRepository.deleteById(id);
     }
 
     @Override
     public Collection<Student> findAll() {
-        return Collections.unmodifiableCollection(studentMap.values());
+        return studentRepository.findAll();
     }
 
     @Override
     public Collection<Student> findByAge(int age) {
-        return studentMap.values().stream().
-                filter(e -> e.getAge() == age).
-                toList();
+        return studentRepository.findByAge(age);
     }
 
-    private ResponseEntity<Student> nullCheck(Student student) {
+    public ResponseEntity<Student> nullCheck(Student student) {
         if (student == null) {
             return ResponseEntity.notFound().build();
         }

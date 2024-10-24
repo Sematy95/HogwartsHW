@@ -3,6 +3,7 @@ package ru.hogwarts.school.service.impl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.repositories.FacultyRepository;
 import ru.hogwarts.school.service.FacultyService;
 
 import java.util.*;
@@ -10,52 +11,47 @@ import java.util.*;
 @Service
 public class FacultyServiceImpl implements FacultyService {
 
-    private final Map<Long, Faculty> facultyMap = new HashMap<>();
-    private long lastId = 0;
+
+    private final FacultyRepository facultyRepository;
+
+    public FacultyServiceImpl(FacultyRepository facultyRepository) {
+        this.facultyRepository = facultyRepository;
+    }
 
     @Override
     public Faculty add(Faculty faculty) {
-        faculty.setId(++lastId);
-        facultyMap.put(lastId, faculty);
-        return faculty;
+        return facultyRepository.save(faculty);
     }
 
     @Override
     public ResponseEntity<Faculty> findFaculty(long id) {
-        Faculty faculty = facultyMap.get(id);
-        return nullCheck(faculty);
-
+        Faculty foundFaculty = facultyRepository.findById(id).get();
+        return nullCheck(foundFaculty);
     }
 
     @Override
     public ResponseEntity<Faculty> editFaculty(Faculty faculty) {
-        if (!facultyMap.containsKey(faculty.getId())) {
-            return ResponseEntity.notFound().build();
-        }
-        Faculty foundfaculty = facultyMap.put(faculty.getId(), faculty);
-        return nullCheck(foundfaculty);
+
+        Faculty editfaculty = facultyRepository.save(faculty);
+        return nullCheck(editfaculty);
     }
 
     @Override
-    public ResponseEntity<Faculty> deleteFaculty(long id) {
-        Faculty faculty = facultyMap.remove(id);
-        return nullCheck(faculty);
-
+    public void deleteFaculty(long id) {
+        facultyRepository.deleteById(id);
     }
 
     @Override
     public Collection<Faculty> findAll() {
-        return Collections.unmodifiableCollection(facultyMap.values());
+        return facultyRepository.findAll();
     }
 
     @Override
     public Collection<Faculty> findByColor(String color) {
-        return facultyMap.values().stream().
-                filter(e -> Objects.equals(e.getColor(), color)).
-                toList();
+        return facultyRepository.findByColor(color);
     }
 
-    private ResponseEntity<Faculty> nullCheck(Faculty faculty) {
+    public ResponseEntity<Faculty> nullCheck(Faculty faculty) {
         if (faculty == null) {
             return ResponseEntity.notFound().build();
         }

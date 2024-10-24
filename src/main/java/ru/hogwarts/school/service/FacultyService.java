@@ -13,7 +13,7 @@ public interface FacultyService {
 
     ResponseEntity<Faculty> editFaculty(Faculty faculty);
 
-    ResponseEntity<Faculty> deleteFaculty(long id);
+    void deleteFaculty(long id);
 
     Collection<Faculty> findAll();
 

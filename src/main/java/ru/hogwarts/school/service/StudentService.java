@@ -12,7 +12,7 @@ public interface StudentService {
 
     ResponseEntity<Student> editStudent(Student student);
 
-    ResponseEntity<Student> deleteStudent(long id);
+    void deleteStudent(long id);
 
     Collection<Student> findAll();
 

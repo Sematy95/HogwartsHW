@@ -27,15 +27,15 @@ public class StudentController {
     }
 
     @PutMapping("/update/{id}")
-    ResponseEntity<Student> editStudent(@PathVariable("id") long id,
-                                        @RequestBody Student student) {
+    ResponseEntity<Student> editStudent(@PathVariable("id") long id, @RequestBody Student student) {
         return studentService.editStudent(student);
 
     }
 
     @DeleteMapping("/delete/{id}")
     ResponseEntity<Student> deleteFaculty(@PathVariable("id") long id) {
-        return studentService.deleteStudent(id);
+        studentService.deleteStudent(id);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/find/all")

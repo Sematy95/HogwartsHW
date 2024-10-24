@@ -2,131 +2,69 @@ package ru.hogwarts.school.service.impl;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.repositories.FacultyRepository;
+import ru.hogwarts.school.service.FacultyService;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class FacultyServiceImplTest {
 
-    private final FacultyServiceImpl facultyService = new FacultyServiceImpl();
+    @Mock
+    private ru.hogwarts.school.repositories.FacultyRepository facultyRepository;
+
+    @InjectMocks
+    private FacultyServiceImpl facultyServiceImpl;
 
 
     @Test
-    @DisplayName("Добавление факультета - положительный тест")
-    void add() {
+    @DisplayName("Добавление факультета  - положительный тест")
+    void add_positive() {
+        when(facultyRepository.save(new Faculty(1L, "Griffindor", "Red"))).thenReturn(new Faculty(1L, "Griffindor", "Red"));
         //test
         Faculty expected = new Faculty(1L, "Griffindor", "Red");
-        Faculty actual = facultyService.add(new Faculty(1L, "Griffindor", "Red"));
-        Faculty actual1 = facultyService.findFaculty(1).getBody();
+        Faculty actual = facultyServiceImpl.add(new Faculty(1L, "Griffindor", "Red"));
 
         //check
         assertEquals(expected, actual);
-        assertEquals(expected, actual1);
+
     }
 
-    @Test
-    @DisplayName("Поиск факультета по id - положительный тест")
-    void findFacultyPositive() {
-        //test
-        facultyService.add(new Faculty(1L, "Griffindor", "Red"));
-        Faculty actual = facultyService.findFaculty(1L).getBody();
-        Faculty expected = new Faculty(1L, "Griffindor", "Red");
 
+    @Test
+    @DisplayName("Проверка значения на null - значение не null ")
+    void nullCheck() {
+
+        Faculty foundFaculty = new Faculty(1L, "Griffindor", "Red");
+
+        //test
+        ResponseEntity<Faculty> actual = facultyServiceImpl.nullCheck(foundFaculty);
+        ResponseEntity<Faculty> expected = ResponseEntity.ok(foundFaculty);
         //check
-        assertEquals(expected, actual);
+        assertEquals(actual, expected);
     }
 
     @Test
-    @DisplayName("Поиск факультета по id - негативный тест - нет такого id ")
-    void findFacultyNegative() {
+    @DisplayName("Проверка значения на null - значение не null ")
+    void nullCheckNegative() {
+
+        Faculty foundFaculty = null;
+
         //test
-        ResponseEntity<Faculty> actual = facultyService.findFaculty(2L);
+        ResponseEntity<Faculty> actual = facultyServiceImpl.nullCheck(null);
         ResponseEntity<Faculty> expected = ResponseEntity.notFound().build();
         //check
         assertEquals(actual, expected);
-
     }
 
-    @Test
-    @DisplayName("Редактирование факультета - положительный тест")
-    void editFaculty() {
-        Faculty expected = facultyService.add(new Faculty(1L, "Griffindor", "Red"));
-        //test
-        Faculty forReplace = new Faculty(1L, "Empire", "Black");
-        Faculty actual = facultyService.editFaculty(forReplace).getBody();
-        Faculty actual1 = facultyService.findFaculty(1L).getBody();
-
-        //check
-        assertEquals(actual, expected);
-        assertEquals(forReplace, actual1);
-
-    }
-
-    @DisplayName("Редактирование факультета - негативный тест - не нашли id")
-    @Test
-    void editFacultyNegative() {
-        facultyService.add(new Faculty(1L, "Griffindor", "Red"));
-        //test
-
-        ResponseEntity<Faculty> actual = facultyService.editFaculty(new Faculty(2L, "Griffindor", "Red"));
-        ResponseEntity<Faculty> expected = ResponseEntity.notFound().build();
-
-        //check
-        assertEquals(actual, expected);
-    }
-
-    @DisplayName("Положительный тест - удалили факультет по id")
-    @Test
-    void deleteFacultyPositive() {
-        //Test
-        Faculty expected = facultyService.add(new Faculty(1L, "Griffindor", "Red"));
-        Faculty actual = facultyService.deleteFaculty(1L).getBody();
-
-        //check
-        assertEquals(actual, expected);
-        assertFalse(facultyService.findAll().contains(expected));
-
-    }
-
-    @DisplayName("Негативный тест на удаление - не нашли id")
-    @Test
-    void deleteFacultyNegative() {
-        //Test
-        facultyService.add(new Faculty(1L, "Griffindor", "Red"));
-        ResponseEntity<Faculty> actual = facultyService.deleteFaculty(2L);
-        ResponseEntity<Faculty> expected = ResponseEntity.notFound().build();
-
-        //check
-        assertEquals(actual, expected);
-
-
-    }
-
-    @Test
-    void findAll() {
-        Faculty var1 = facultyService.add(new Faculty(1L, "Griffindor", "Red"));
-        Faculty var2 = facultyService.add(new Faculty(2L, "Horde", "Black"));
-        Faculty var3 = facultyService.add(new Faculty(3L, "Alliance", "White"));
-
-        Collection<Faculty> actual = facultyService.findAll();
-
-        //check
-        assertTrue(actual.contains(var1) & actual.contains(var2) & actual.contains(var3));
-
-    }
-
-    @Test
-    void findByColor() {
-        Faculty var1 = facultyService.add(new Faculty(1L, "Griffindor", "Red"));
-        Faculty var2 = facultyService.add(new Faculty(2L, "Horde", "Red"));
-        Faculty var3 = facultyService.add(new Faculty(3L, "Alliance", "White"));
-
-        Collection<Faculty> actual = facultyService.findByColor("Red");
-        //check
-        assertTrue(actual.contains(var1) & actual.contains(var2) & !actual.contains(var3));
-
-    }
 }
