@@ -1,8 +1,8 @@
 package ru.hogwarts.school.service.impl;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repositories.StudentRepository;
 import ru.hogwarts.school.service.StudentService;
@@ -51,10 +51,29 @@ public class StudentServiceImpl implements StudentService {
         return studentRepository.findByAge(age);
     }
 
+    @Override
+    public Collection<Student> findByAgeBetween(int ageMin, int ageMax) {
+        return studentRepository.findByAgeBetween(ageMin, ageMax);
+    }
+
+    @Override
+    public String getStudentFaculty(long studentId) {
+        return studentRepository.findById(studentId).get().getFaculty().getName();
+
+    }
+
     public ResponseEntity<Student> nullCheck(Student student) {
         if (student == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(student);
     }
+
+    public ResponseEntity<Faculty> nullCheck(Faculty faculty) {
+        if (faculty == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(faculty);
+    }
+
 }

@@ -3,6 +3,7 @@ package ru.hogwarts.school.service.impl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repositories.FacultyRepository;
 import ru.hogwarts.school.service.FacultyService;
 
@@ -51,11 +52,28 @@ public class FacultyServiceImpl implements FacultyService {
         return facultyRepository.findByColor(color);
     }
 
+    @Override
+    public Collection<Faculty> findByColorOrName(String color, String name) {
+        return facultyRepository.findByColorOrNameIgnoreCase(color, name);
+    }
+
+    @Override
+    public Collection<Student> findAllStudentsInFaculty(long facultyId) {
+        return Collections.unmodifiableCollection(facultyRepository.findById(facultyId).get().getStudents());
+    }
+
     public ResponseEntity<Faculty> nullCheck(Faculty faculty) {
         if (faculty == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(faculty);
+    }
+
+    public ResponseEntity<Student> nullCheck(Student student) {
+        if (student == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(student);
     }
 
 }
