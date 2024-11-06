@@ -56,7 +56,7 @@ public class StudentController {
     }
 
     @GetMapping("/findStudentFaculty/{id}")
-    String findStudentFaculty(@PathVariable("id") long id) {
+    Faculty findStudentFaculty(@PathVariable("id") long id) {
 
         return studentService.getStudentFaculty(id);
     }

@@ -10,25 +10,24 @@ import ru.hogwarts.school.repositories.AvatarRepository;
 import ru.hogwarts.school.repositories.StudentRepository;
 import ru.hogwarts.school.service.AvatarService;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.UUID;
 
 import static io.swagger.v3.core.util.AnnotationsUtils.getExtensions;
-import static java.lang.Boolean.*;
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
 @Service
 @Transactional
 public class AvatarServiceImpl implements AvatarService {
 
+
     private final AvatarRepository avatarRepository;
     private final StudentRepository studentRepository;
 
     @Value("${path.to.avatars.folder")
-    private String avatarsDir;
+    private Path avatarsDir;
 
     public AvatarServiceImpl(AvatarRepository avatarRepository, StudentRepository studentRepository) {
         this.avatarRepository = avatarRepository;
@@ -36,43 +35,50 @@ public class AvatarServiceImpl implements AvatarService {
     }
 
     @Override
-    public void uploadAvatar(Long studentId, MultipartFile avatarFile) throws IOException {
-        Student student = studentRepository.getById(studentId);
-        Path filePath = Path.of(avatarsDir, student + "." + getExtensions(Boolean.parseBoolean(avatarFile.getOriginalFilename())));
-        Files.createDirectories(filePath.getParent());
-        Files.deleteIfExists(filePath);
+    public long uploadAvatar(Long studentId, MultipartFile avatarFile) throws IOException {
+        Student student = studentRepository.findById(studentId).orElseThrow(() -> new RuntimeException("Student is no found"));
+        savaAvatarLocal(avatarFile);
 
-        try (
-            InputStream inputStream = avatarFile.getInputStream();
-            OutputStream outputStream = Files.newOutputStream(filePath,CREATE_NEW);
-            BufferedInputStream bis = new BufferedInputStream(inputStream,1024);
-            BufferedOutputStream bos = new BufferedOutputStream(outputStream,1024);
-        ){
-            bis.transferTo(bos);
-        }
+        Path path = savaAvatarLocal(avatarFile);
 
-        Avatar avatar = avatarRepository.findByStudentId(studentId).orElseGet(Avatar::new);
-        avatar.setStudent(student);
-        avatar.setFilePath(filePath.toString());
-        avatar.setFileSize(avatarFile.getSize());
-        avatar.setMediaType(avatarFile.getContentType());
-        avatar.setData(generateDataForDB(filePath);
-        avatarRepository.save(avatar);
-
-    }
-    private byte[] generateDataForDB(Path filePath) throws IOException {
-        try (
-                InputStream inputStream=Files.newInputStream(filePath);
-                BufferedInputStream bufferedInputStream=new BufferedInputStream(inputStream,1024);
-                ByteArrayOutputStream byteArrayInputStream= new ByteArrayOutputStream()) {
-            BufferedImage image = ImageIO.read(bufferedInputStream);
-        }
-
-
-
+        System.out.println("path.toString() = " + path.toString());
+        Avatar avatar = new Avatar(studentId,
+                path.toString(),
+                avatarFile.getSize(),
+                avatarFile.getContentType(),
+                avatarFile.getBytes(), student);
+        return avatarRepository.save(avatar).getId();
 
     }
 
+    private Path savaAvatarLocal(MultipartFile avatarFile) throws IOException {
+        createDirectoryIfNotExist();
+        if (avatarFile.getOriginalFilename()==null) {
+            throw new RuntimeException("File is empty");
+        }
+        Path path = Path.of(avatarsDir.toString(), UUID.randomUUID()+getExtension(avatarFile.getOriginalFilename()));
+        Files.write(path, avatarFile.getBytes());
+
+//        try (BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(avatarFile.getBytes()));
+//             BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(path.toFile()))) {
+//            bos.write(bis.readAllBytes());
+//        } catch (Exception ignored) {
+//        }
+
+        return path;
+
+    }
+
+    private String getExtension (String path) {
+        return path.substring(path.lastIndexOf("."));
+    }
+
+    private void createDirectoryIfNotExist() throws IOException {
+        if (Files.notExists(avatarsDir)) {
+            Files.createDirectory(avatarsDir);
+
+        }
+    }
 
     @Override
     public Avatar findAvatar(Long studentId) {

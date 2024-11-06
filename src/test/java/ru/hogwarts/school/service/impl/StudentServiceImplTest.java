@@ -57,8 +57,8 @@ class StudentServiceImplTest {
         Faculty foundFaculty = null;
 
         //test
-        ResponseEntity<Student> actual = studentServiceImpl.nullCheck(null);
-        ResponseEntity<Student> expected = ResponseEntity.notFound().build();
+        ResponseEntity<Faculty> actual = studentServiceImpl.nullCheck(foundFaculty);
+        ResponseEntity<Faculty> expected = ResponseEntity.notFound().build();
         //check
         assertEquals(actual, expected);
     }
