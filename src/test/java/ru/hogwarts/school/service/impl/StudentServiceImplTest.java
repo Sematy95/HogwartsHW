@@ -27,10 +27,10 @@ class StudentServiceImplTest {
     @Test
     @DisplayName("Добавление студента  - положительный тест")
     void add_positive() {
-        when(studentRepository.save(new Student(1L, "Harry", 11))).thenReturn(new Student(1L, "Harry", 11));
+        when(studentRepository.save(new Student( "Harry", 11))).thenReturn(new Student( "Harry", 11));
         //test
-        Student expected = new Student(1L, "Harry", 11);
-        Student actual = studentServiceImpl.add(new Student(1L, "Harry", 11));
+        Student expected = new Student("Harry", 11);
+        Student actual = studentServiceImpl.add(new Student( "Harry", 11));
 
         //check
         assertEquals(expected, actual);
@@ -41,7 +41,7 @@ class StudentServiceImplTest {
     @DisplayName("Проверка значения на null - значение не null ")
     void nullCheck() {
 
-        Student foundStudent = new Student(1L, "Harry", 11);
+        Student foundStudent = new Student( "Harry", 11);
 
         //test
         ResponseEntity<Student> actual = studentServiceImpl.nullCheck(foundStudent);

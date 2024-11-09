@@ -11,7 +11,7 @@ public class Avatar {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String filePath;
+    public String filePath;
     private long fileSize;
     private String mediaType;
 
@@ -24,8 +24,7 @@ public class Avatar {
     public Avatar() {
     }
 
-    public Avatar(Long id, String filepath, long fileSize, String mediaType, byte[] data, Student student) {
-        this.id = id;
+    public Avatar( String filepath, long fileSize, String mediaType, byte[] data, Student student) {
         this.filePath = filePath;
         this.fileSize = fileSize;
         this.mediaType = mediaType;
