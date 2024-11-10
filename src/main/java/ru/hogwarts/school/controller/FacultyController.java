@@ -58,7 +58,7 @@ public class FacultyController {
     }
 
     @GetMapping("/find/studentsInFaculty/{id}")
-    Collection<Student> findAll(@PathVariable("id") long id) {
+    Collection<Student> findAllStudentsInFaculty(@PathVariable("id") long id) {
         return facultyService.findAllStudentsInFaculty(id);
     }
 

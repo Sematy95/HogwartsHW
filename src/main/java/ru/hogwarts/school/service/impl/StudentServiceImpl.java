@@ -30,10 +30,11 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public ResponseEntity<Student> editStudent(Student student) {
-
-        Student editStudent = studentRepository.save(student);
-        return nullCheck(editStudent);
+    public void editStudent(long id, Student student) {
+        if (!studentRepository.existsById(id)) {
+            throw new RuntimeException("Студента с таким номером нет");
+        }
+        studentRepository.save(student);
     }
 
     @Override

@@ -11,7 +11,7 @@ public interface StudentService {
 
     ResponseEntity<Student> findStudent(long id);
 
-    ResponseEntity<Student> editStudent(Student student);
+    void editStudent(long id, Student student);
 
     void deleteStudent(long id);
 
