@@ -58,6 +58,7 @@ public class StudentController {
 
     @GetMapping("/findStudentFaculty/{id}")
     Faculty findStudentFaculty(@PathVariable("id") long id) {
+        System.out.println("\"gggggg\" = " + "gggggg");
 
         return studentService.getStudentFaculty(id);
     }

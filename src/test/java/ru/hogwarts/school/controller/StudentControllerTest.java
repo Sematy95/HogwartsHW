@@ -12,14 +12,20 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.repositories.FacultyRepository;
 import ru.hogwarts.school.repositories.StudentRepository;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.RandomUtils.nextInt;
+import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -33,6 +39,12 @@ class StudentControllerTest {
 
     @Autowired
     private StudentRepository studentRepository;
+
+    private Faculty facultyForTest = new Faculty("Griffindor567", "Red");
+    private Student studentForTest = new Student("Sasha", 35, facultyForTest);
+
+    @Autowired
+    private FacultyRepository facultyRepository;
 
     @Test
     @DisplayName("Корректно добавляет студента в БД")
@@ -137,7 +149,6 @@ class StudentControllerTest {
 
     @Test
     @DisplayName("Корректно ищет студентов по возрасту")
-
     void findByAge() {
         Student student1 = new Student("Санечек49", 49);
         Student student2 = new Student("Санечек50", 49);
@@ -158,7 +169,6 @@ class StudentControllerTest {
 
     @Test
     @DisplayName("Корректно ищет студентов по возрастдиапазону возраста")
-
     void findByAgeBetween() {
         Student student1 = new Student("Санечек49", 49);
         Student student2 = new Student("Санечек50", 49);
@@ -176,5 +186,19 @@ class StudentControllerTest {
         assertThat(studentsResponseEntity.getBody().contains(student1) && studentsResponseEntity.getBody().contains(student2) && (!studentsResponseEntity.getBody().contains(student3)));
 
     }
+
+    @Test
+    @DisplayName("Корректно ищет факультет студента")
+    void findStudentFaculty() {
+        facultyRepository.save(facultyForTest);
+        studentRepository.save(studentForTest);
+        ResponseEntity<Faculty> facultyResponseEntity = restTemplate.exchange
+                ("http://localhost:" + port + "/student/findStudentFaculty/{id}"
+                        , HttpMethod.GET, null, Faculty.class, studentForTest.getId());
+        assertThat(facultyResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(facultyResponseEntity).isNotNull();
+        assertTrue(facultyResponseEntity.getBody().equals(facultyForTest));
+    }
+
 
 }

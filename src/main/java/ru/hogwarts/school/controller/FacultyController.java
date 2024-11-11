@@ -51,7 +51,7 @@ public class FacultyController {
         return facultyService.findByColor(color);
     }
 
-    @GetMapping("/find/colorAndName")
+    @GetMapping("/find/colorOrName")
     Collection<Faculty> findByColorOrName(@RequestParam(required = false) String color,
                                           @RequestParam(required = false) String name) {
         return facultyService.findByColorOrName(color, name);
@@ -59,6 +59,8 @@ public class FacultyController {
 
     @GetMapping("/find/studentsInFaculty/{id}")
     Collection<Student> findAllStudentsInFaculty(@PathVariable("id") long id) {
+
+        System.out.println("\"1111111\" = " + "1111111");
         return facultyService.findAllStudentsInFaculty(id);
     }
 
