@@ -59,7 +59,7 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public Collection<Student> findAllStudentsInFaculty(long facultyId) {
-        return facultyRepository.findById(facultyId).get().getStudents();
+        return facultyRepository.findById(facultyId).orElseThrow(NullPointerException::new).getStudents();
     }
 
     public ResponseEntity<Faculty> nullCheck(Faculty faculty) {

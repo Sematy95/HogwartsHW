@@ -19,12 +19,12 @@ public class StudentController {
     }
 
     @PostMapping("/add")
-    Student add(@RequestBody Student student) {
+    public Student add(@RequestBody Student student) {
         return studentService.add(student);
     }
 
     @GetMapping("/find/{id}")
-    ResponseEntity<Student> findStudent(@PathVariable("id") long id) {
+    public ResponseEntity<Student> findStudent(@PathVariable("id") long id) {
         return studentService.findStudent(id);
     }
 
@@ -35,30 +35,29 @@ public class StudentController {
     }
 
     @DeleteMapping("/delete/{id}")
-    ResponseEntity<Student> deleteStudent(@PathVariable("id") long id) {
+    public ResponseEntity<Student> deleteStudent(@PathVariable("id") long id) {
         studentService.deleteStudent(id);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/find/all")
-    Collection<Student> findAll() {
+    public Collection<Student> findAll() {
         return studentService.findAll();
     }
 
     @GetMapping("/find/age/{age}")
-    Collection<Student> findByAge(@PathVariable("age") int age) {
+    public Collection<Student> findByAge(@PathVariable("age") int age) {
         return studentService.findByAge(age);
     }
 
     @GetMapping("/find/age/between")
-    Collection<Student> findByAgeBetween(@RequestParam("ageMin") int ageMin,
+    public Collection<Student> findByAgeBetween(@RequestParam("ageMin") int ageMin,
                                          @RequestParam("ageMax") int ageMax) {
         return studentService.findByAgeBetween(ageMin, ageMax);
     }
 
     @GetMapping("/findStudentFaculty/{id}")
-    Faculty findStudentFaculty(@PathVariable("id") long id) {
-        System.out.println("\"gggggg\" = " + "gggggg");
+    public Faculty findStudentFaculty(@PathVariable("id") long id) {
 
         return studentService.getStudentFaculty(id);
     }
