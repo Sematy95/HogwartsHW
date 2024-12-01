@@ -15,5 +15,5 @@ public interface AvatarService {
 
     AvatarView getAvatarFromLocal(Long studentId) throws IOException;
 
-    List<Avatar> getAllAvatar(Integer pageNumber, Integer pageSize);
+    List<Avatar> getAllAvatar(int pageNumber, int pageSize);
 }
