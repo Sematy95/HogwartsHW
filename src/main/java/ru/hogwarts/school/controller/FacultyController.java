@@ -19,45 +19,45 @@ public class FacultyController {
     }
 
     @GetMapping("/find/{id}")
-    ResponseEntity<Faculty> findFaculty(@PathVariable("id") long id) {
+    public ResponseEntity<Faculty> findFaculty(@PathVariable("id") long id) {
         return facultyService.findFaculty(id);
     }
 
     @PostMapping("/add")
-    Faculty add(@RequestBody Faculty faculty) {
+    public Faculty add(@RequestBody Faculty faculty) {
         return facultyService.add(faculty);
     }
 
     @PutMapping("/update/{id}")
-    ResponseEntity<Faculty> editFaculty(@PathVariable("id") long id,
+    public ResponseEntity<Faculty> editFaculty(@PathVariable("id") long id,
                                         @RequestBody Faculty faculty) {
         return facultyService.editFaculty(faculty);
 
     }
 
     @DeleteMapping("/delete/{id}")
-    ResponseEntity<Faculty> deleteFaculty(@PathVariable("id") long id) {
+    public ResponseEntity<Faculty> deleteFaculty(@PathVariable("id") long id) {
         facultyService.deleteFaculty(id);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/find/all")
-    Collection<Faculty> findAll() {
+    public Collection<Faculty> findAll() {
         return facultyService.findAll();
     }
 
     @GetMapping("/find/color/{color}")
-    Collection<Faculty> findByColor(@PathVariable("color") String color) {
+    public Collection<Faculty> findByColor(@PathVariable("color") String color) {
         return facultyService.findByColor(color);
     }
 
     @GetMapping("/find/colorOrName")
-    Collection<Faculty> findByColorOrName(@RequestParam(required = false) String color,
+    public Collection<Faculty> findByColorOrName(@RequestParam(required = false) String color,
                                           @RequestParam(required = false) String name) {
         return facultyService.findByColorOrName(color, name);
     }
 
-    @GetMapping("/find/studentsInFaculty/{id}")
+    public @GetMapping("/find/studentsInFaculty/{id}")
     Collection<Student> findAllStudentsInFaculty(@PathVariable("id") long id) {
 
         System.out.println("\"1111111\" = " + "1111111");

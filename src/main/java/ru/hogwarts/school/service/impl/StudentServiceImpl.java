@@ -59,8 +59,23 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Faculty getStudentFaculty(long studentId) {
-        return studentRepository.findById(studentId).get().getFaculty();
+        return studentRepository.findById(studentId).orElseThrow(NullPointerException::new).getFaculty();
 
+    }
+
+    @Override
+    public int getStudentsCount() {
+        return studentRepository.getStudentsCount();
+    }
+
+    @Override
+    public int getStudentsAverageAge() {
+        return studentRepository.getStudentsAverageAge();
+    }
+
+    @Override
+    public List<Student> getLastFiveStudents() {
+        return studentRepository.getLastFiveStudents();
     }
 
     public ResponseEntity<Student> nullCheck(Student student) {

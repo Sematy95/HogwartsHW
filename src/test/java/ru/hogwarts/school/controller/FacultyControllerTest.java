@@ -39,12 +39,11 @@ class FacultyControllerTest {
     private FacultyServiceImpl facultyService;
 
     @MockBean
-    private ru.hogwarts.school.repositories.FacultyRepository FacultyRepository;
+    private ru.hogwarts.school.repositories.FacultyRepository facultyRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
-    @Autowired
-    private FacultyRepository facultyRepository;
+
 
 
     @Test
@@ -78,7 +77,7 @@ class FacultyControllerTest {
         Faculty faculty = new Faculty(1L, "Griffindor", "Red");
         String content = objectMapper.writeValueAsString(faculty);
 
-        when(FacultyRepository.save(any(Faculty.class))).thenReturn(faculty);
+        when(facultyRepository.save(any(Faculty.class))).thenReturn(faculty);
 
         //test & check
         mockMvc.perform(post("/faculty/add")
@@ -101,7 +100,7 @@ class FacultyControllerTest {
         Faculty faculty = new Faculty(facultyId, "Griffindor", "Red");
         String content = objectMapper.writeValueAsString(faculty);
 
-        when(FacultyRepository.save(any(Faculty.class))).thenReturn(faculty);
+        when(facultyRepository.save(any(Faculty.class))).thenReturn(faculty);
 
         //test & check
         mockMvc.perform(put("/faculty/update/" + facultyId)
@@ -165,7 +164,7 @@ class FacultyControllerTest {
 
         // test & check
 
-        mockMvc.perform(get("/faculty/find/color?" + color)
+        mockMvc.perform(get("/faculty/find/color/" + color)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print())
@@ -204,18 +203,8 @@ class FacultyControllerTest {
         Student student1 = new Student(1L, "andrew", 29);
         Student student2 = new Student(2L, "misha", 29);
         faculty.setStudents(List.of(student1, student2));
-        Optional<Student> studentOptional = Optional.of(student1);
-        Optional<Student> studentOptional2 = Optional.of(student2);
-        Collection<Student> studentCollection = List.of(student1, student2);
-        List<Optional<Student>> studentCollection2 = List.of(studentOptional, studentOptional2);
-        System.out.println("faculty.getStudents() = " + faculty.getStudents());
 
-
-        //when(facultyRepository.findById(faculty.getId())).thenReturn(Optional.of(faculty));
-        //when(facultyRepository.findById(faculty.getId()).get()).thenReturn(faculty);
-        //when(facultyRepository.findById(faculty.getId()).get().getStudents()).thenReturn(faculty.getStudents());
-        when(facultyRepository.findById(faculty.getId()).get().getStudents()).thenReturn(studentCollection);
-
+        when(facultyRepository.findById(faculty.getId())).thenReturn(Optional.of(faculty));
 
         // test & check
 
@@ -224,9 +213,6 @@ class FacultyControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(jsonPath("$").exists());
-
-
-        verify(facultyRepository, times(1)).findById(faculty.getId()).get().getStudents();
 
     }
 
