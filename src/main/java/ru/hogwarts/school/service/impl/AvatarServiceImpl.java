@@ -1,11 +1,14 @@
 package ru.hogwarts.school.service.impl;
 
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import ru.hogwarts.school.exception.AvatarNotFoundException;
 import ru.hogwarts.school.model.Avatar;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.model.dto.AvatarView;
@@ -38,8 +41,12 @@ public class AvatarServiceImpl implements AvatarService {
         this.avatarsDir = avatarsDir;
     }
 
+    Logger logger = LoggerFactory.getLogger(AvatarServiceImpl.class);
+
+
     @Override
     public long uploadAvatar(Long studentId, MultipartFile avatarFile) throws IOException {
+        logger.info("Was invoked method for uploading avatar");
 
         Student student = studentRepository.findById(studentId).orElseThrow(() -> new RuntimeException("Student is no found"));
 
@@ -57,7 +64,7 @@ public class AvatarServiceImpl implements AvatarService {
                     try {
                         Files.delete(Path.of(x.getFilePath()));
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        throw new AvatarNotFoundException(e);
                     }
                     avatar.setId(x.getId());
                 });
@@ -67,6 +74,8 @@ public class AvatarServiceImpl implements AvatarService {
     }
 
     private Path savaAvatarLocal(MultipartFile avatarFile) throws IOException {
+        logger.info("Was invoked method for saving avatar in local storage");
+
 
         createDirectoryIfNotExist();
 
@@ -92,14 +101,21 @@ public class AvatarServiceImpl implements AvatarService {
 
     @Override
     public Avatar getAvatarFromDb(Long studentId) {
+        logger.info("Was invoked method for getting avatar from DB by studentId {}", studentId);
 
-        return avatarRepository.findByStudentId(studentId).orElseThrow(RuntimeException::new);
+        return avatarRepository.findByStudentId(studentId).orElseThrow(() -> {
+            logger.error("Get Avatar from Db -Avatar is not found by studentId {}", studentId);
+            return new AvatarNotFoundException("Avatar is not found");
+        });
     }
 
     @Override
     public AvatarView getAvatarFromLocal(Long studentId) throws IOException {
         Avatar avatar = avatarRepository.findByStudentId(studentId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> {
+                    logger.error("Get Avatar from Local - avatar is not found by studentId {}", studentId);
+                    return new AvatarNotFoundException("Avatar is not found");
+                });
         byte[] bytes = Files.readAllBytes(Path.of(avatar.getFilePath()));
         return new AvatarView(MediaType.parseMediaType(avatar.getMediaType()), bytes);
 
