@@ -11,6 +11,7 @@ import ru.hogwarts.school.service.impl.StudentServiceImpl;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @RestController
@@ -65,7 +66,7 @@ public class StudentController {
     @GetMapping("/getValueUpd")
     public int getValueUpd() {
         long start = System.currentTimeMillis();
-        int value = Stream.iterate(1, a -> a + 1).limit(1_000_000).parallel().reduce(0, (a, b) -> a + b );
+        int value = IntStream.iterate(1, a -> a + 1).limit(1_000_000).parallel().reduce(0, Integer::sum);
         //int value = Stream.iterate(1, a -> a +1) .limit(1_000_000) .reduce(0, (a, b) -> a + b );
         long finish = System.currentTimeMillis();
         logger.info("getValueUpd took {} ms", finish - start);
