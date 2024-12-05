@@ -1,10 +1,13 @@
 package ru.hogwarts.school.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
+import ru.hogwarts.school.service.impl.StudentServiceImpl;
 
 import java.util.Collection;
 import java.util.List;
@@ -13,6 +16,8 @@ import java.util.stream.Stream;
 @RestController
 @RequestMapping("/student")
 public class StudentController {
+    Logger logger = LoggerFactory.getLogger(StudentController.class);
+
 
     private final StudentService studentService;
 
@@ -57,9 +62,24 @@ public class StudentController {
         return studentService.getStudentsAverageAge2();
     }
 
-    @GetMapping("/getValue")
-    public int getValue() {
-        return Stream.iterate(1, a -> a + 1).limit(1_000_000).parallel().reduce(0, Integer::sum);
+    @GetMapping("/getValueUpd")
+    public int getValueUpd() {
+        long start = System.currentTimeMillis();
+        int value = Stream.iterate(1, a -> a + 1).limit(1_000_000).parallel().reduce(0, (a, b) -> a + b );
+        //int value = Stream.iterate(1, a -> a +1) .limit(1_000_000) .reduce(0, (a, b) -> a + b );
+        long finish = System.currentTimeMillis();
+        logger.info("getValueUpd took {} ms", finish - start);
+        return value;
+    }
+
+    @GetMapping("/getValuOld")
+    public int getValueOld() {
+        long start = System.currentTimeMillis();
+        //int value = Stream.iterate(1, a -> a + 1).limit(1_000_000).parallel().reduce(0, (a, b) -> a + b );
+        int value = Stream.iterate(1, a -> a +1) .limit(1_000_000) .reduce(0, (a, b) -> a + b );
+        long finish = System.currentTimeMillis();
+        logger.info("getValueOLD took {} ms", finish - start);
+        return value;
     }
 
     @GetMapping("/find/age/{age}")
