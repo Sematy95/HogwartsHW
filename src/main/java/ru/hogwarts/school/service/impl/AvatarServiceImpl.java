@@ -41,12 +41,12 @@ public class AvatarServiceImpl implements AvatarService {
         this.avatarsDir = avatarsDir;
     }
 
-    Logger logger = LoggerFactory.getLogger(AvatarServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(AvatarServiceImpl.class);
 
 
     @Override
     public long uploadAvatar(Long studentId, MultipartFile avatarFile) throws IOException {
-        logger.info("Was invoked method for uploading avatar");
+        logger.info("Was invoked method for uploading avatar for student with id {}", studentId);
 
         Student student = studentRepository.findById(studentId).orElseThrow(() -> new RuntimeException("Student is no found"));
 
@@ -104,7 +104,7 @@ public class AvatarServiceImpl implements AvatarService {
         logger.info("Was invoked method for getting avatar from DB by studentId {}", studentId);
 
         return avatarRepository.findByStudentId(studentId).orElseThrow(() -> {
-            logger.error("Get Avatar from Db -Avatar is not found by studentId {}", studentId);
+            logger.error("Get Avatar from Db - Avatar is not found by studentId {}", studentId);
             return new AvatarNotFoundException("Avatar is not found");
         });
     }

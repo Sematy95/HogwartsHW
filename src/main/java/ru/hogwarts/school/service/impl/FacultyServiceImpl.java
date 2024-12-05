@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import ru.hogwarts.school.exception.AvatarNotFoundException;
 import ru.hogwarts.school.exception.FacultyNotFoundException;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
@@ -22,7 +21,7 @@ public class FacultyServiceImpl implements FacultyService {
         this.facultyRepository = facultyRepository;
     }
 
-    Logger logger = LoggerFactory.getLogger(FacultyServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(FacultyServiceImpl.class);
 
     @Override
     public Faculty add(Faculty faculty) {
@@ -32,7 +31,7 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public ResponseEntity<Faculty> findFaculty(long id) {
-        logger.info("Was invoked method for searching faculty by id");
+        logger.info("Was invoked method for searching faculty by id {}", id);
         Faculty foundFaculty = facultyRepository.findById(id).get();
         return nullCheck(foundFaculty);
     }
@@ -47,7 +46,7 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public void deleteFaculty(long id) {
-        logger.info("Was invoked method for deleting faculty");
+        logger.info("Was invoked method for deleting faculty{}", id);
         facultyRepository.deleteById(id);
     }
 
@@ -77,6 +76,17 @@ public class FacultyServiceImpl implements FacultyService {
                     return new FacultyNotFoundException("Faculty isw not found");
                 })
                 .getStudents();
+    }
+
+    @Override
+    public String getLongestFacultyName() {
+        logger.info("Was invoked method for getting longest faculty name");
+        return facultyRepository.findAll().stream()
+                .map(Faculty::getName).
+                max(Comparator.comparingInt(String::length)).orElseThrow(() -> {
+                    logger.error("getLongestFacultyName - faculties are not found");
+                    return new FacultyNotFoundException("Faculties are not found");
+                });
     }
 
     public ResponseEntity<Faculty> nullCheck(Faculty faculty) {
