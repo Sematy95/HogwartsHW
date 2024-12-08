@@ -30,7 +30,7 @@ public class FacultyController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<Faculty> editFaculty(@PathVariable("id") long id,
-                                        @RequestBody Faculty faculty) {
+                                               @RequestBody Faculty faculty) {
         return facultyService.editFaculty(faculty);
 
     }
@@ -53,15 +53,19 @@ public class FacultyController {
 
     @GetMapping("/find/colorOrName")
     public Collection<Faculty> findByColorOrName(@RequestParam(required = false) String color,
-                                          @RequestParam(required = false) String name) {
+                                                 @RequestParam(required = false) String name) {
         return facultyService.findByColorOrName(color, name);
     }
 
     public @GetMapping("/find/studentsInFaculty/{id}")
     Collection<Student> findAllStudentsInFaculty(@PathVariable("id") long id) {
-
-        System.out.println("\"1111111\" = " + "1111111");
         return facultyService.findAllStudentsInFaculty(id);
     }
+
+    @GetMapping("/longestName")
+    public ResponseEntity<String> getLongestFacultyName() {
+        return ResponseEntity.ok(facultyService.getLongestFacultyName());
+    }
+
 
 }

@@ -26,7 +26,11 @@ public interface StudentService {
 
     int getStudentsCount();
 
-    int getStudentsAverageAge();
+    double getStudentsAverageAge();
 
     List<Student> getLastFiveStudents();
+
+    List<String> getStudentsWithNameStartingWithA();
+
+    double getStudentsAverageAge2();
 }
