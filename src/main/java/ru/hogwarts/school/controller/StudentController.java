@@ -54,8 +54,8 @@ public class StudentController {
     }
 
     @GetMapping("/find/allStudentsStartingWithA")
-    public ResponseEntity<Collection<String>> getStudentsWithNameStartingWith() {
-        return ResponseEntity.ok(studentService.getStudentsWithNameStartingWithA());
+    public Collection<String> getStudentsWithNameStartingWith() {
+        return studentService.getStudentsWithNameStartingWithA();
     }
 
     @GetMapping("/getAverageAge2")
