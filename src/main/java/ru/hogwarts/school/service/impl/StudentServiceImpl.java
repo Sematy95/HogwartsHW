@@ -118,6 +118,55 @@ public class StudentServiceImpl implements StudentService {
                 });
     }
 
+    @Override
+    public void studentsPrintParallel() {
+        logger.info("Was invoked method for printing 6 students in parallel");
+        List<Student> students = studentRepository.findAll().stream()
+                .limit(6)
+                .toList();
+        System.out.println("students.get(0) = " + students.get(0));
+        System.out.println("students.get(1) = " + students.get(1));
+
+        Thread tread1 = new Thread(() -> {
+            System.out.println("students.get(2) = " + students.get(2));
+            System.out.println("students.get(3) = " + students.get(3));
+        });
+
+        Thread tread2 = new Thread(() -> {
+            System.out.println("students.get(4) = " + students.get(2));
+            System.out.println("students.get(5) = " + students.get(3));
+        });
+
+        tread1.start();
+        tread2.start();
+    }
+
+    @Override
+    public void studentsPrintSynchronized() {
+        logger.info("Was invoked method for printing 6 students in synchronized way");
+        List<Student> students = studentRepository.findAll().stream()
+                .limit(6)
+                .toList();
+        printStudents(students, 0, 1);
+
+        Thread tread1 = new Thread(() -> {
+            printStudents(students, 2, 3);
+        });
+
+        Thread tread2 = new Thread(() -> {
+            printStudents(students, 4, 5);
+        });
+
+        tread1.start();
+        tread2.start();
+    }
+
+    private synchronized void printStudents(List<Student> students, int a, int b) {
+        System.out.println("students.get("+a+") = " + students.get(a));
+        System.out.println("students.get("+b+") = " + students.get(b));
+    }
+
+
     public ResponseEntity<Student> nullCheck(Student student) {
         if (student == null) {
             logger.error("Student is null");
