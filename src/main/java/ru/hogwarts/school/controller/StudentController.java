@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
-import ru.hogwarts.school.service.impl.StudentServiceImpl;
+
 
 import java.util.Collection;
 import java.util.List;
@@ -63,6 +63,16 @@ public class StudentController {
         return studentService.getStudentsAverageAge2();
     }
 
+    @GetMapping("/students/print-parallel")
+    public void studentsPrintParallel() {
+        studentService.studentsPrintParallel();
+    }
+
+    @GetMapping("/students/print-synchronized")
+    public void studentsPrintSynchronized() {
+        studentService.studentsPrintSynchronized();
+    }
+
     @GetMapping("/getValueUpd")
     public int getValueUpd() {
         long start = System.currentTimeMillis();
@@ -73,11 +83,11 @@ public class StudentController {
         return value;
     }
 
-    @GetMapping("/getValuOld")
+    @GetMapping("/getValueOld")
     public int getValueOld() {
         long start = System.currentTimeMillis();
         //int value = Stream.iterate(1, a -> a + 1).limit(1_000_000).parallel().reduce(0, (a, b) -> a + b );
-        int value = Stream.iterate(1, a -> a +1) .limit(1_000_000) .reduce(0, (a, b) -> a + b );
+        int value = Stream.iterate(1, a -> a + 1).limit(1_000_000).reduce(0, (a, b) -> a + b);
         long finish = System.currentTimeMillis();
         logger.info("getValueOLD took {} ms", finish - start);
         return value;
